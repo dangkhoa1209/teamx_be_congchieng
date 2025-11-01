@@ -4,5 +4,6 @@
 /.dist
 /logs
 .env
-/src/router.ts
 package-lock.json
+/uploads
+

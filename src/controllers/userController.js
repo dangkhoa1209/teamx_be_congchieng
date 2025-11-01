@@ -4,7 +4,7 @@ export const getUsers = (req, res) => {
   console.log('reqfiles', req.files);
   
   
-  res.json([
+  return res.formatter.ok([
     { id: 1, name: 'Khoa' },
     { id: 2, name: 'fdg' }
   ])

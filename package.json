@@ -4,7 +4,8 @@
   "main": "src/app.js",
   "type": "module",
   "imports": {
-    "#plugins/*": "./src/plugins/*"
+    "#plugins/*": "./src/plugins/*",
+    "#controllers/*": "./src/controllers/*"
   },
   "scripts": {
     "dev": "nodemon src/app.js",
@@ -19,6 +20,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "mime-types": "^3.0.1",
     "multer": "^2.0.2"
   },
   "devDependencies": {

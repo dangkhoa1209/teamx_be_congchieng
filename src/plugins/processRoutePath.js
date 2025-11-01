@@ -43,6 +43,7 @@ const processRoutePath = async (app, basePath, options = {}) => {
     const stat = await fs.promises.stat(filepath)
 
     if (stat.isDirectory()) {
+      
       if (filename.match(/\[(.[^[^\]]*)\]/)) {
         paramList.push({ path: path.join(subPath, filename) })
       } else {
@@ -76,6 +77,9 @@ const processRoutePath = async (app, basePath, options = {}) => {
       const fileUrl = pathToFileURL(file.path).href
       const module = await import(fileUrl)
       const routes = module.default || module
+
+      console.log('fullPath', fullPath);
+      
 
       if (routes && typeof routes.use === 'function') {
         app.use(fullPath, ...validMiddlewares, routes)

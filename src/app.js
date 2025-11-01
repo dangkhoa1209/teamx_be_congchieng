@@ -1,10 +1,9 @@
 import express from 'express'
 import cors from 'cors'
-import { processRoutePath } from '#plugins/index.js'
+import { processRoutePath, responseFormatter} from '#plugins/index.js'
 import { fileURLToPath } from 'url'
 import path from 'path'
 import normalizeFileMiddleware from '#plugins/normalizeFiles.js'
-
 const app = express()
 
 const host = process.env.LISTEN_HOST || 'localhost'
@@ -12,6 +11,8 @@ const port = parseInt(process.env.LISTEN_PORT || '3001', 10)
 
 app.use(cors())
 app.use(express.json())
+
+responseFormatter(app)
 
 const startup = async () => {
   const __filename = fileURLToPath(import.meta.url)
