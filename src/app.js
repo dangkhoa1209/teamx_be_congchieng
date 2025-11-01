@@ -1,9 +1,9 @@
 import express from 'express'
 import cors from 'cors'
-import userRoutes from './routes/index.js'
 import { processRoutePath } from '#plugins/index.js'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import normalizeFileMiddleware from '#plugins/normalizeFiles.js'
 
 const app = express()
 
@@ -16,15 +16,9 @@ app.use(express.json())
 const startup = async () => {
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
-
   await processRoutePath(app, `${__dirname}/routes`, {
     prefix: '',
-    middlewares: [
-      (req, res, next) => {
-        console.log('Request:', req.method, req.url)
-        next() 
-      }
-    ]
+    middlewares: normalizeFileMiddleware
   })
 
   app.listen(port, host, () => {

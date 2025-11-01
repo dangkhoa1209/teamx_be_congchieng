@@ -20,7 +20,7 @@ const formatPath = (routePath, prefix = '') => {
 /**
  * Đệ quy quét toàn bộ route folder và gắn vào app
  */
-const processRoutePath = async (app, basePath, options = {}) => {
+const processRoutePath = async (app, basePath, options = {}) => {  
   const {
     prefix = '',
     path: subPath = '',
@@ -70,17 +70,10 @@ const processRoutePath = async (app, basePath, options = {}) => {
   for (const file of fileList) {
     if (file.filename !== 'index.js' && file.filename !== 'index.ts') {
       const fn = file.filename.split('.')[0]
-
-      console.log('file.router', file.router);
       const path = file.router == '/' ? '' : file.router
       const routerPath = `${path}/${fn}`
       const fullPath = formatPath(routerPath, prefix)
       const fileUrl = pathToFileURL(file.path).href
-
-      console.log('fullPath', fullPath);
-      console.log('fileUrl', fileUrl);
-      
-
       const module = await import(fileUrl)
       const routes = module.default || module
 
@@ -96,7 +89,6 @@ const processRoutePath = async (app, basePath, options = {}) => {
     }
   }
 
-  // 3️⃣ Load thư mục có params (:id)
   for (const folder of paramList) {
     await processRoutePath(app, basePath, {
       ...options,
