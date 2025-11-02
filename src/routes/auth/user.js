@@ -1,18 +1,14 @@
 import { authRouter } from '#plugins/index.js'
-// import {
-//   validate, getUser, changePassword, editInfo, logout, inviteUser, deleteAccount, findUser
-// } from '@controllers/auth'
-
+import { UserModule } from '#modules/index.js'
 export default (app) => {
   const router = authRouter(app)
-  router.get('/', (req, res) => {
-    return res.formatter.ok(req.user)
-  })
+  router.get('/', new UserModule().getUser)
+  router.put('/change-password', new UserModule().changePassword)
   // router.get('/find', findUser)
   // router.get('invite-user/', inviteUser)
   // // router.put('/', editInfo)
-  // router.put('/change-password', validate.changePassword, changePassword)
-  // router.post('/logout', logout)
+ 
+  router.get('/logout', new UserModule().logout)
   // router.delete('/delete-account', deleteAccount)
 
   return router

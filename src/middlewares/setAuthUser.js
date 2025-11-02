@@ -16,6 +16,8 @@ const setAuthUser = async (app, req, res, next) => {
     
     req.user = token.user
     res.user = token.user
+    res.token = token
+    req.token = token    
     
     next()
   } catch (err) {

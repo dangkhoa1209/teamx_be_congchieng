@@ -1,5 +1,5 @@
 import User from "#models/user.js";
-import OAuthToken from '#models/oauth/oauthToken.js'
+import OAuthToken from '#models/oauth/oAuthToken.js'
 import OAuthRefreshToken from '#models/oauth/oAuthRefreshToken.js'
 import OAuthClient from '#models/oauth/oAuthClient.js'
 import jwt from 'jsonwebtoken'
@@ -37,13 +37,13 @@ const OAuthModel = {
       user: user._id,
       client: client._id,
       accessToken: token.accessToken.tokenId,
-      accessTokenExpiresAt: new Date(Date.now() + 3600 * 1000),
+      accessTokenExpiresAt: token.accessTokenExpiresAt,
       scope: token.scope
     });
     await OAuthRefreshToken.create({
       accessToken: accessToken._id,
       refreshToken: token.refreshToken.tokenId,
-      refreshTokenExpiresAt: new Date(Date.now() + 30*24*3600*1000),
+      refreshTokenExpiresAt: token.refreshTokenExpiresAt,
       scope: token.scope
     });
     

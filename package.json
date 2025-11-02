@@ -8,7 +8,8 @@
     "#controllers/*": "./src/controllers/*",
     "#middlewares/*": "./src/middlewares/*",
     "#config/*": "./src/config/*",
-    "#models/*": "./src/models/*"
+    "#models/*": "./src/models/*",
+    "#modules/*": "./src/modules/*"
   },
   "scripts": {
     "dev": "nodemon src/app.js",

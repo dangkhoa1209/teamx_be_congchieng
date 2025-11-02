@@ -1,11 +1,13 @@
-import express from 'express'
-import { FileController } from '#controllers/fileController.js'
+import { FileModule } from '#modules/index.js'
+import { guestRouter } from '#plugins/index.js'
 
-const router = express.Router()
+export default (app) => {  
+  const router = guestRouter(app)
 
-router.get('/:pathname', new FileController().get)
-router.get('/:path1/:pathname', new FileController().get)
-router.get('/:path1/:path2/:pathname', new FileController().get)
-router.get('/:path1/:path2/:path3/:pathname', new FileController().get)
-
-export default router
+  router.get('/:pathname', new FileModule().get)
+  router.get('/:path1/:pathname', new FileModule().get)
+  router.get('/:path1/:path2/:pathname', new FileModule().get)
+  router.get('/:path1/:path2/:path3/:pathname', new FileModule().get)
+  
+  return router
+}
