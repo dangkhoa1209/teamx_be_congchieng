@@ -4,10 +4,6 @@ import { fileURLToPath, pathToFileURL } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-/**
- * Định dạng path cho Express (chuyển [id] -> :id)
- */
 const formatPath = (routePath, prefix = '') => {
   if (prefix) {
     if (!prefix.startsWith('/')) prefix = '/' + prefix
@@ -17,9 +13,6 @@ const formatPath = (routePath, prefix = '') => {
   return routePath.replaceAll(/\[(.[^[^\]]*)\]/g, ':$1')
 }
 
-/**
- * Đệ quy quét toàn bộ route folder và gắn vào app
- */
 const processRoutePath = async (app, basePath, options = {}) => {  
   const {
     prefix = '',
@@ -67,7 +60,6 @@ const processRoutePath = async (app, basePath, options = {}) => {
 
   const indexList = []
 
-  // 2️⃣ Load các file route không phải index
   for (const file of fileList) {
     if (file.filename !== 'index.js' && file.filename !== 'index.ts') {
       const fn = file.filename.split('.')[0]
@@ -76,15 +68,12 @@ const processRoutePath = async (app, basePath, options = {}) => {
       const fullPath = formatPath(routerPath, prefix)
       const fileUrl = pathToFileURL(file.path).href
       const module = await import(fileUrl)
-      const routes = module.default || module
-
-      console.log('fullPath', fullPath);
-      
+      const routes = module.default || module      
 
       if (routes && typeof routes.use === 'function') {
         app.use(fullPath, ...validMiddlewares, routes)
       } else if (typeof routes === 'function') {
-        routes(app)
+        app.use(fullPath, ...validMiddlewares, routes(app))
       } else {
         console.warn(`⚠️ Route ${file.path} không hợp lệ, bỏ qua.`)
       }
@@ -100,17 +89,16 @@ const processRoutePath = async (app, basePath, options = {}) => {
     })
   }
 
-  // 4️⃣ Load file index.js|ts
   for (const file of indexList) {
     const fileUrl = pathToFileURL(file.path).href
     const module = await import(fileUrl)
     const routes = module.default || module
     const fullPath = formatPath(file.router, prefix)
-
+    
     if (routes && typeof routes.use === 'function') {
       app.use(fullPath, ...validMiddlewares, routes)
     } else if (typeof routes === 'function') {
-      routes(app)
+      app.use(fullPath, ...validMiddlewares, routes(app))
     } else {
       console.warn(`⚠️ Route ${file.path} không hợp lệ, bỏ qua.`)
     }

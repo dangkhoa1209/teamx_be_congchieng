@@ -65,6 +65,7 @@ const generateFormatters = (res) => {
         noFormatter
       ) => {
         if (res.success !== undefined && !res.success) {
+          
           responseBody = _generateErrorResponse({
             errors: data,
             meta,
@@ -87,18 +88,20 @@ const generateFormatters = (res) => {
       }
     } else {
       formatter[method.name] = (errors, meta, status, code) => {
-        if (typeof errors === 'string') {
-          errors = [errors]
-        }
-        if (typeof errors === 'object') {
+         
+        if (errors && !Array.isArray(errors)) {
           errors = [errors.message || errors]
-        }
+        }else {
+          errors = []
+        }   
+
         responseBody = _generateErrorResponse({
           errors,
           meta,
           method,
           status
         })
+        
         res.status(code || method.code).send(stringify(responseBody, replacer, spaces, escape))
       }
     }
