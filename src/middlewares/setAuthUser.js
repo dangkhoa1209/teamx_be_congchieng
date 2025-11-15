@@ -21,6 +21,15 @@ const setAuthUser = async (app, req, res, next) => {
     
     next()
   } catch (err) {
+    if (err.name === 'invalid_token' && err.message.includes('expired')) {
+      return res.formatter.unauthorized('Access token expired')
+    }
+    
+    // Token không hợp lệ → unauthorized
+    if (err.name === 'invalid_token') {
+      return res.formatter.unauthorized('Access token invalid')
+    }
+
     return res.formatter.forbidden()
   }
 }

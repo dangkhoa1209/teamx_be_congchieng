@@ -30,7 +30,7 @@ const OAuthModel = {
     const tokenId = crypto.randomBytes(20).toString('hex');
     const jwtSecretKey = process.env.APP_KEY || 'secret';
     const data = { userId: user._id, tokenId, time: Date() };
-    return { tokenId, code: jwt.sign(data, jwtSecretKey, { expiresIn: '30d' }) };
+    return { tokenId, code: jwt.sign(data, jwtSecretKey, { expiresIn: '90d' }) };
   },
   saveToken: async (token, client, user) => {
     const accessToken = await OAuthToken.create({
@@ -41,6 +41,8 @@ const OAuthModel = {
       scope: token.scope
     });
     await OAuthRefreshToken.create({
+      user: user._id,
+      client: client._id,
       accessToken: accessToken._id,
       refreshToken: token.refreshToken.tokenId,
       refreshTokenExpiresAt: token.refreshTokenExpiresAt,
@@ -51,7 +53,7 @@ const OAuthModel = {
       accessToken: token.accessToken.code,
       refreshToken: token.refreshToken.code,
       accessTokenExpiresAt: accessToken.accessTokenExpiresAt,
-      user: { id: user._id, username: user.username },
+      user: { id: user._id, username: user.username, isAdmin: user.isAdmin, permissions: user.permissions },
       client: { id: client._id },
     };
   },
@@ -67,22 +69,50 @@ const OAuthModel = {
     const jwtSecretKey = process.env.APP_KEY || 'secret';
     try {
       const verified = jwt.verify(refreshToken, jwtSecretKey);
-      const token = await OAuthRefreshToken.findOne({ refreshToken: verified.tokenId }).populate('user').populate('client');
-      return token?.toObject() || null;
-    } catch(e){ return null; }
+      console.log('verified', verified);
+      
+     const token = await OAuthRefreshToken.findOne({ refreshToken: verified.tokenId })
+      .populate('client')
+      .populate('user')
+      .populate({
+        path: 'accessToken',
+        populate: [
+          { path: 'client' },
+          { path: 'user' }
+        ]
+      })      
+      return {
+        ...token._doc,
+        token: token.accessToken
+      }
+    } catch(e){
+      console.log('e', e);
+      return null;
+    }
   },
   revokeToken: async (refreshToken) => {
     const jwtSecretKey = process.env.APP_KEY || 'secret';
-    try {
-      const verified = jwt.verify(refreshToken, jwtSecretKey);
-      const token = await OAuthRefreshToken.findOne({ refreshToken: verified.tokenId });
-      if(token) {
-        await OAuthToken.deleteOne({ _id: token.accessToken });
-        await token.deleteOne();
-        return true;
+    try {      
+      if(typeof refreshToken == 'string') {
+        const verified = jwt.verify(refreshToken, jwtSecretKey);
+        const token = await OAuthRefreshToken.findOne({ refreshToken: verified.tokenId });        
+        if(token) {
+          await OAuthToken.deleteOne({ _id: token.accessToken });
+          await token.deleteOne();
+          return true;
+        }
+      }else {
+        await OAuthToken.deleteOne({ _id: refreshToken.token._id });
+        await OAuthRefreshToken.deleteOne({ _id: refreshToken._id });
+        return true
       }
+      
       return false;
-    } catch(e){ return false; }
+    } catch(e){ 
+      console.log('eeeee', e);
+      
+      return false; 
+    }
   }
 }; 
 

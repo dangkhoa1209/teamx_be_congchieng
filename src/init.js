@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import OAuthClient from '#models/oauth/oAuthClient.js';
-
+import { UserModel } from "#models/index.js"
 dotenv.config();
 
 import {connectionString} from "#config/index.js"
@@ -10,16 +10,34 @@ async function init() {
   try {
     await mongoose.connect(connectionString);
 
+    // create client
     const existingClient = await OAuthClient.findOne({});
-
     if (existingClient) {
-      console.log(`✅ OAuthClient "${clientId}" already exists`);
+      console.log('exist client', existingClient);
     } else {
       const newClient = new OAuthClient({
         secret: 'demo-secret',
-        grants: ['password']
+        grants: ['password', 'refresh_token']
       });
       await newClient.save();
+      console.log('client', newClient);
+    }
+
+    // create user 
+    const existAdmin = await UserModel.findOne({username: 'admin'});
+    if(existAdmin){
+      existAdmin.password = process.env.ADMIN_DEFAULT_PW || '123456'
+      existAdmin.isAdmin = true
+      await existAdmin.save()
+      console.log('update admin success');
+    }else{
+      const newAdmin = new OAuthClient({
+        username: 'admin',
+        password: process.env.ADMIN_DEFAULT_PW || '123456',
+        isAdmin: true
+      });
+      await newAdmin.new()
+      console.log('create admin success'); 
     }
 
   } catch (err) {
