@@ -4,6 +4,7 @@ export default (app) => {
   const router = authRouter(app)
   
   router.post('/save', new AdminAcountModule().save)
+  router.post('/list', new AdminAcountModule().list)
 
   return router
 }

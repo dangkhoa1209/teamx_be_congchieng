@@ -29,6 +29,27 @@ export default class AdminAcountModule {
     await newAdmin.save()
     return res.formatter.ok()
   }
+
+  list = async (req, res) => {
+    let { page = 1, per_page = 10 } = req.body
+    page = parseInt(page)
+    per_page = parseInt(per_page)
+    if (page < 1) page = 1
+    if (per_page < 1) per_page = 10
+    const totalItems = await UserModel.countDocuments()
+    const data = await UserModel.find()
+      .skip((page - 1) * per_page)
+      .limit(per_page)
+      .sort({ createdAt: -1 })
+      .select('-password')
+    return res.formatter.ok({
+      data,
+      currentPage: page,
+      size: per_page,
+      totalItems
+    })
+    return res.json()
+  }
     
   
 
