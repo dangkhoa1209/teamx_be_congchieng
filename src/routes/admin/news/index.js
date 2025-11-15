@@ -2,9 +2,9 @@ import { authRouter } from '#plugins/index.js'
 import { AdminNewsModule } from '#modules/index.js'
 export default (app) => {
   const router = authRouter(app)
-  router.post('/', new AdminNewsModule().create)
   
-   router.post('/logout', async (req, res) => {
+  router.post('/', new AdminNewsModule().create)
+  router.post('/logout', async (req, res) => {
     try {
       const token = req.token
       const user = req.user
