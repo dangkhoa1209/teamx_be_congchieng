@@ -59,10 +59,23 @@ export default class AdminNewsModule {
     
   }
 
-//    originalName: 'hihi',
-//   fileName: '1763287923430-hihi',
-//   mimeType: 'image/jpeg',
-//   size: 342465,
-//   savedPath: '/Users/user/Desktop/TeamX/cong_chieng_so_lam_dong/teamx_be_congchieng/uploads/tin-tuc-su-kien/1763287923430-hihi',
-//   url: '/tin-tuc-su-kien/1763287923430-hihi'
+  list = async (req, res) => {
+    let { page = 1, per_page = 10 } = req.body
+    page = parseInt(page)
+    per_page = parseInt(per_page)
+    if (page < 1) page = 1
+    if (per_page < 1) per_page = 10
+    const totalItems = await NewsModel.countDocuments()
+    const data = await NewsModel.find()
+      .skip((page - 1) * per_page)
+      .limit(per_page)
+      .sort({ createdAt: -1 })
+    return res.formatter.ok({
+      data,
+      currentPage: page,
+      size: per_page,
+      totalItems
+    })
+    return res.json()
+  }
 }

@@ -4,6 +4,6 @@ export default (app) => {
   const router = authRouter(app)
   
   router.post('/', new AdminNewsModule().create)
-  
+  router.post('/list', new AdminNewsModule().list)
   return router
 }
