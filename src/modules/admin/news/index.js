@@ -9,10 +9,10 @@ export default class AdminNewsModule {
     const hasImage = contents.some(c => c.type === 'image')
 
     if (!hasContent) {
-      return res.formatter.badRequest('Phải có ít nhất 1 nội dung.')
+      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 nội dung.')
     }
     if (!hasImage) {
-      return res.formatter.badRequest('Phải có ít nhất 1 hình ảnh.')
+      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 hình ảnh.')
     }
 
     // Upload ảnh và thêm metadata
@@ -23,12 +23,16 @@ export default class AdminNewsModule {
         }
 
         const imageFile = req.file?.[`image_${content.id}`]
-        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`)          
+        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`) 
+          
+          console.log('imageFile', imageFile);
+          
         const uploaded = await upload(imageFile, { dest: '/tin-tuc-su-kien/' })
         content.size = uploaded.size
         content.fileName = uploaded.fileName
         content.mimeType = uploaded.mimeType
         content.url = uploaded.url
+
         delete content.image
 
         return content
@@ -59,6 +63,74 @@ export default class AdminNewsModule {
     
   }
 
+  update = async (req, res) => {
+    const { id } =  req.params
+    const news = await NewsModel.findById(id)
+
+    if(!news) {
+      return res.formatter.unprocess('Không tìm thấy bài viết')
+    }
+
+    let contents = JSON.parse(req.body.contents)
+
+    const hasContent = contents.some(c => c.type === 'content')
+    const hasImage = contents.some(c => c.type === 'image')
+
+    if (!hasContent) {
+      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 nội dung.')
+    }
+    if (!hasImage) {
+      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 hình ảnh.')
+    }
+
+     contents = await Promise.all(
+      contents.map(async (content) => {
+        if (content.type === 'content') {
+          return content
+        }
+
+        if(content.url){
+          return content
+        }
+
+        const imageFile = req.file?.[`image_${content.id}`]
+        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`) 
+          
+          console.log('imageFile', imageFile);
+          
+        const uploaded = await upload(imageFile, { dest: '/tin-tuc-su-kien/' })
+        content.size = uploaded.size
+        content.fileName = uploaded.fileName
+        content.mimeType = uploaded.mimeType
+        content.url = uploaded.url
+
+        delete content.image
+
+        return content
+      })
+    )
+
+    const slugify = slugifyFn(req.body.title)
+
+    const existSlug = await NewsModel.findOne({
+      slugify,
+      _id: { $ne: req.params.id }
+    })
+
+    if(existSlug) {
+      return res.formatter.unprocess('Tiêu đề đã đuợc sử dụng. Vui lòng thay đổi để tiếp tục')
+    }
+
+    news.slugify = slugify
+    news.title = req.body.title
+    news.subtitle = req.body.subtitle
+    news.contents = contents
+    news.status = req.body.status
+    await news.save()
+
+    return res.formatter.ok()
+  }
+
   list = async (req, res) => {
     let { page = 1, per_page = 10 } = req.body
     page = parseInt(page)
@@ -78,4 +150,5 @@ export default class AdminNewsModule {
     })
     return res.json()
   }
+
 }

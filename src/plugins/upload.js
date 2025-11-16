@@ -100,7 +100,10 @@ export async function resFile(req, res, options = {}) {
 
   const mimeType = mime.lookup(fileFullPath) || 'application/octet-stream'
   const fileBuffer = await readFile(fileFullPath, options)
-  res.setHeader('Content-Type', mimeType)
+  res.setHeader("Content-Type", mimeType)
+  res.setHeader("Content-Length", fileBuffer.length)
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
+  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none")
   res.send(fileBuffer)
 }
 
