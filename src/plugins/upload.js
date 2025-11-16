@@ -67,10 +67,7 @@ export async function saveFiles(files, options = {}) {
       size,
       savedPath: targetPath,
       url
-    })
-
-    console.log('results', results);
-    
+    })    
   }
 
   return Array.isArray(files) ? results : results[0]

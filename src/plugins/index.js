@@ -2,6 +2,7 @@ import processRoutePath from './processRoutePath.js'
 import {saveFiles, readFile, resFile} from './upload.js'
 import responseFormatter from './response-formatter/index.js'
 import {authRouter, guestRouter} from './route.js'
+import { slugifyFn, removeVietnameseTones } from './formatter.js'
 export {
   processRoutePath,
   saveFiles as upload,
@@ -10,5 +11,7 @@ export {
   resFile,
   responseFormatter,
   authRouter,
-  guestRouter
+  guestRouter,
+  slugifyFn,
+  removeVietnameseTones
 }
