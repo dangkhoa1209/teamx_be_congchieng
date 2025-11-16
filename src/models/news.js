@@ -27,8 +27,8 @@ newsSchema.pre('save', async function (next) {
   this.thumbnail = firstImage ? firstImage.url : ''
 
   // data search  (titel + subtitle)
-  const rawSearch = `${req.body.title} ${req.body.subtitle}`
-  this.search = cleanString(removeVietnameseTones(rawSearch))
+  const rawSearch = `${this.title} ${this.subtitle}`
+  this.search = removeVietnameseTones(rawSearch)
   next()
 })
 

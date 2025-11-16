@@ -3,7 +3,6 @@ import {upload, slugifyFn} from '#plugins/index.js'
 
 export default class AdminNewsModule {
   create = async (req, res) => {
-    
     let contents = JSON.parse(req.body.contents)
 
     const hasContent = contents.some(c => c.type === 'content')
@@ -23,9 +22,8 @@ export default class AdminNewsModule {
           return content
         }
 
-        const imageFile = req.file[`image_${content.id}`]
-        if (!imageFile) throw new Error(`File image_${content.id} không tồn tại`)
-
+        const imageFile = req.file?.[`image_${content.id}`]
+        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`)          
         const uploaded = await upload(imageFile, { dest: '/tin-tuc-su-kien/' })
         content.size = uploaded.size
         content.fileName = uploaded.fileName
