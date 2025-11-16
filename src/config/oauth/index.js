@@ -16,7 +16,7 @@ const OAuthModel = {
     const user = await User.findOne({ $or: [{ username }, { email: username }] }).select('+password');
     
     if (!user || !(await user.validatePassword(password))) {
-      throw new Error('Email hoặc mật khẩu không khớp!');
+      throw new Error('Tài khoản hoặc mật khẩu không khớp!');
     }
     return user;
   },
