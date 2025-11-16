@@ -35,11 +35,6 @@ export default (app) => {
       return res.formatter.forbidden()
     }
   })
-
- 
-
-
-
   return router
 }
 

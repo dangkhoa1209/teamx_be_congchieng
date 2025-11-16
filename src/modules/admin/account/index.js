@@ -61,7 +61,7 @@ export default class AdminAcountModule {
       return res.formatter.unprocess('Không tìm thấy tài khoản')
     }
 
-    if(user.username === 'admin') {
+    if(user.isAdmin) {
       return res.formatter.unprocess('Không đuợc phép cập nhật Admin')
     }
 
@@ -109,7 +109,7 @@ export default class AdminAcountModule {
         return res.formatter.unprocess('Không tìm thấy tài khoản');
       }
 
-      if (user.username === 'admin') {
+       if(user.isAdmin) {
         await session.abortTransaction();
         session.endSession();
         return res.formatter.unprocess('Không được phép xoá Admin');
