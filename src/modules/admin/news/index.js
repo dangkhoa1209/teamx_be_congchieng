@@ -49,6 +49,7 @@ export default class AdminNewsModule {
     }
 
     const data = {
+      location: req.body.location,
       slugify,
       title: req.body.title,
       subtitle: req.body.subtitle,
@@ -120,7 +121,7 @@ export default class AdminNewsModule {
     if(existSlug) {
       return res.formatter.unprocess('Tiêu đề đã đuợc sử dụng. Vui lòng thay đổi để tiếp tục')
     }
-
+    news.location = req.body.location
     news.slugify = slugify
     news.title = req.body.title
     news.subtitle = req.body.subtitle
@@ -132,13 +133,15 @@ export default class AdminNewsModule {
   }
 
   list = async (req, res) => {
-    let { page = 1, per_page = 10 } = req.body
+    let { page = 1, per_page = 10, query} = req.body
     page = parseInt(page)
     per_page = parseInt(per_page)
     if (page < 1) page = 1
     if (per_page < 1) per_page = 10
     const totalItems = await NewsModel.countDocuments()
-    const data = await NewsModel.find()
+    console.log('query', query);
+    
+    const data = await NewsModel.find(query)
       .skip((page - 1) * per_page)
       .limit(per_page)
       .sort({ createdAt: -1 })

@@ -3,6 +3,7 @@ import {removeVietnameseTones} from '#plugins/index.js'
 
 const newsSchema = new mongoose.Schema({
   slugify: {type: String},
+  location: {type: String, require: true},
   title: { type: String, require: true },
   subtitle: { type: String, require: true },
   status: {type: String, default: 'unactive'},
