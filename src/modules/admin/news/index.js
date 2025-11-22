@@ -1,5 +1,5 @@
 import { NewsModel  } from "#models/index.js"
-import {upload, slugifyFn} from '#plugins/index.js'
+import {upload, slugifyFn, convertToTimestamp} from '#plugins/index.js'
 
 export default class AdminNewsModule {
   create = async (req, res) => {
@@ -32,7 +32,6 @@ export default class AdminNewsModule {
         content.fileName = uploaded.fileName
         content.mimeType = uploaded.mimeType
         content.url = uploaded.url
-
         delete content.image
 
         return content
@@ -54,7 +53,8 @@ export default class AdminNewsModule {
       title: req.body.title,
       subtitle: req.body.subtitle,
       contents,
-      status: req.body.status
+      status: req.body.status,
+      author: req.body.author
     }
 
     const newNews = new NewsModel(data)
@@ -111,22 +111,30 @@ export default class AdminNewsModule {
       })
     )
 
-    const slugify = slugifyFn(req.body.title)
+    // có thay đôi tiêu đề thi tao slug moi
+    if(req.body.title != news.title) {
 
-    const existSlug = await NewsModel.findOne({
-      slugify,
-      _id: { $ne: req.params.id }
-    })
+      const slugify = slugifyFn(req.body.title)
 
-    if(existSlug) {
-      return res.formatter.unprocess('Tiêu đề đã đuợc sử dụng. Vui lòng thay đổi để tiếp tục')
+      const existSlug = await NewsModel.findOne({
+        slugify,
+        _id: { $ne: req.params.id }
+      })
+
+      if(existSlug) {
+        return res.formatter.unprocess('Tiêu đề đã đuợc sử dụng. Vui lòng thay đổi để tiếp tục')
+      }
+
+      news.slugify = slugify
     }
+
     news.location = req.body.location
-    news.slugify = slugify
     news.title = req.body.title
     news.subtitle = req.body.subtitle
     news.contents = contents
     news.status = req.body.status
+    news.author = req.body.author
+
     await news.save()
 
     return res.formatter.ok()
@@ -139,7 +147,6 @@ export default class AdminNewsModule {
     if (page < 1) page = 1
     if (per_page < 1) per_page = 10
     const totalItems = await NewsModel.countDocuments()
-    console.log('query', query);
     
     const data = await NewsModel.find(query)
       .skip((page - 1) * per_page)
@@ -151,7 +158,19 @@ export default class AdminNewsModule {
       size: per_page,
       totalItems
     })
-    return res.json()
   }
 
+  deleteNews = async (req, res) => {
+    const { _id } = req.body;
+
+    const news = await NewsModel.findById(_id).session(session);
+
+    if (!news) {
+      return res.formatter.unprocess('Không tìm thấy tin tức - sự kiện');
+    }
+
+    await news.deleteOne({ session });
+
+    return res.formatter.ok();
+  }
 }

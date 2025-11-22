@@ -12,7 +12,10 @@ const newsSchema = new mongoose.Schema({
     require: true
   },
   search: {
-    type: 'String',
+    type: String,
+  },
+  author: {
+    type: String
   },
   createdAt: { type: Number },
   updatedAt: { type: Number }

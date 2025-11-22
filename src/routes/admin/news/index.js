@@ -6,6 +6,7 @@ export default (app) => {
   router.post('/', new AdminNewsModule().create)
   router.post('/list', new AdminNewsModule().list)
   router.put('/:id', new AdminNewsModule().update)
+  router.delete('/', new AdminNewsModule().deleteNews)
   
   return router
 }
