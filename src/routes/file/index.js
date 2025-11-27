@@ -8,6 +8,7 @@ export default (app) => {
   router.get('/:path1/:pathname', new FileModule().get)
   router.get('/:path1/:path2/:pathname', new FileModule().get)
   router.get('/:path1/:path2/:path3/:pathname', new FileModule().get)
+  router.get('/:path1/:path2/:path3/:path4/:pathname', new FileModule().get)
   
   return router
 }

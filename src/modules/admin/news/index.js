@@ -9,24 +9,24 @@ export default class AdminNewsModule {
     const hasImage = contents.some(c => c.type === 'image')
 
     if (!hasContent) {
-      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 nội dung.')
+      return res.formatter.unprocess('Vui lòng thêm ít nhất 1 nội dung.')
     }
     if (!hasImage) {
-      return res.formatter.badRequest('Vui lòng thêm ít nhất 1 hình ảnh.')
+      return res.formatter.unprocess('Vui lòng thêm ít nhất 1 hình ảnh.')
+    }
+
+    if (!req.body.location){
+      return res.formatter.unprocess('Vui lòng chọn trực thuộc.')
     }
 
     // Upload ảnh và thêm metadata
     contents = await Promise.all(
       contents.map(async (content) => {
-        if (content.type === 'content') {
+        if (content.type != 'image') {
           return content
-        }
-
+        }        
         const imageFile = req.file?.[`image_${content.id}`]
-        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`) 
-          
-          console.log('imageFile', imageFile);
-          
+        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`)           
         const uploaded = await upload(imageFile, { dest: '/tin-tuc-su-kien/' })
         content.size = uploaded.size
         content.fileName = uploaded.fileName
@@ -57,6 +57,9 @@ export default class AdminNewsModule {
       author: req.body.author
     }
 
+    console.log('data', data);
+    
+
     const newNews = new NewsModel(data)
     await newNews.save()
 
@@ -86,7 +89,7 @@ export default class AdminNewsModule {
 
      contents = await Promise.all(
       contents.map(async (content) => {
-        if (content.type === 'content') {
+        if (content.type != 'image') {
           return content
         }
 
@@ -95,10 +98,7 @@ export default class AdminNewsModule {
         }
 
         const imageFile = req.file?.[`image_${content.id}`]
-        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`) 
-          
-          console.log('imageFile', imageFile);
-          
+        if (!imageFile) throw new Error(`Vui lòng chọn hình ảnh`)           
         const uploaded = await upload(imageFile, { dest: '/tin-tuc-su-kien/' })
         content.size = uploaded.size
         content.fileName = uploaded.fileName
@@ -134,6 +134,7 @@ export default class AdminNewsModule {
     news.contents = contents
     news.status = req.body.status
     news.author = req.body.author
+    news.markModified('contents')
 
     await news.save()
 
@@ -148,10 +149,15 @@ export default class AdminNewsModule {
     if (per_page < 1) per_page = 10
     const totalItems = await NewsModel.countDocuments()
     
-    const data = await NewsModel.find(query)
+    console.log('query', query);
+    
+    const data = await NewsModel.find({})
       .skip((page - 1) * per_page)
       .limit(per_page)
       .sort({ createdAt: -1 })
+
+      console.log('data', data);
+      
     return res.formatter.ok({
       data,
       currentPage: page,
@@ -163,13 +169,13 @@ export default class AdminNewsModule {
   deleteNews = async (req, res) => {
     const { _id } = req.body;
 
-    const news = await NewsModel.findById(_id).session(session);
+    const news = await NewsModel.findById(_id);
 
     if (!news) {
       return res.formatter.unprocess('Không tìm thấy tin tức - sự kiện');
     }
 
-    await news.deleteOne({ session });
+    await news.deleteOne();
 
     return res.formatter.ok();
   }

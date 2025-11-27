@@ -71,9 +71,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(morgan('tiny'))
 }
 
-const startup = async () => {
-  console.log('connectionString', connectionString);
-  
+const startup = async () => {  
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = path.dirname(__filename)
   await processRoutePath(app, `${__dirname}/routes`, {

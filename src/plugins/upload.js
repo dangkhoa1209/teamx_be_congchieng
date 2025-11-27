@@ -86,7 +86,6 @@ export async function readFile(fullFilePath, options = {}) {
 }
 
 export async function resFile(req, res, options = {}) {
-
   const {path1, path2, path3, path4, pathname} = req.params
 
   const filePath = [path1, path2, path3, path4, pathname]

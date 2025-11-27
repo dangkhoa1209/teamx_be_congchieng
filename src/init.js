@@ -20,7 +20,6 @@ async function init() {
         grants: ['password', 'refresh_token']
       });
       await newClient.save();
-      console.log('client', newClient);
     }
 
     // create user 

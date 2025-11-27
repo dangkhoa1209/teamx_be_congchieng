@@ -69,7 +69,6 @@ const OAuthModel = {
     const jwtSecretKey = process.env.APP_KEY || 'secret';
     try {
       const verified = jwt.verify(refreshToken, jwtSecretKey);
-      console.log('verified', verified);
       
      const token = await OAuthRefreshToken.findOne({ refreshToken: verified.tokenId })
       .populate('client')
@@ -86,7 +85,7 @@ const OAuthModel = {
         token: token.accessToken
       }
     } catch(e){
-      console.log('e', e);
+      console.log('error', e);
       return null;
     }
   },
@@ -109,7 +108,7 @@ const OAuthModel = {
       
       return false;
     } catch(e){ 
-      console.log('eeeee', e);
+      console.log('error', e);
       
       return false; 
     }

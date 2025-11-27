@@ -14,8 +14,6 @@ export default (app) => {
 
   router.post('/refresh', async (req, res) => {
     try {
-
-      console.log('req', req.body);
       
       const request = new OAuthServer.Request(req)
       const response = new OAuthServer.Response(res)

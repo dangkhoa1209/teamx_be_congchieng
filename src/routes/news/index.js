@@ -3,6 +3,7 @@ import { NewsModule } from '#modules/index.js'
 export default (app) => {  
   const router = guestRouter(app)
   router.post('/', new NewsModule().detail)
+  router.post('/other', new NewsModule().other)
   router.post('/find', new NewsModule().find)
 
   return router

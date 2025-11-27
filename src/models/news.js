@@ -2,30 +2,69 @@ import mongoose from 'mongoose'
 import {removeVietnameseTones} from '#plugins/index.js'
 
 const newsSchema = new mongoose.Schema({
-  slugify: {type: String},
-  location: {type: String, require: true},
-  title: { type: String, require: true },
-  subtitle: { type: String, require: true },
-  status: {type: String, default: 'unactive'},
+  slugify: {
+    type: String,
+    required: true,
+    unique: true, 
+    trim: true
+  },
+  location: {
+    type: String,
+    trim: true
+  },
+  title: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  subtitle: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  status: {
+    type: String,
+    enum: ['active', 'unactive'],
+    default: 'unactive'
+  },
   contents: {
-    type: Array,
-    require: true
+    type: [mongoose.Schema.Types.Mixed],
+    required: true,
+    default: []
   },
   search: {
     type: String,
+    trim: true
   },
   author: {
-    type: String
+    type: String,
+    trim: true
   },
-  createdAt: { type: Number },
-  updatedAt: { type: Number }
+  thumbnail: {
+    type: String,
+    default: ''
+  },
+  createdAt: {
+    type: Number,
+  },
+  updatedAt: {
+    type: Number,
+  }
+}, {
+  timestamps: true,
+  collection: 'teamx_news',
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 })
 
-newsSchema.pre('save', async function (next) {
-  const now = Date.now()
-  if (!this.createdAt) this.createdAt = now
-  this.updatedAt = now
+newsSchema.index({ slugify: 1 }, { unique: true })
+newsSchema.index({ search: "text" }) 
+newsSchema.index({ status: 1, createdAt: -1 })
+newsSchema.index({ location: 1 })
+newsSchema.index({ status: 1, createdAt: -1 })
+newsSchema.index({ author: 1 })
 
+newsSchema.pre('save', async function (next) {
   // thumbnail
   const firstImage = this.contents.find(c => c.type === 'image')
   this.thumbnail = firstImage ? firstImage.url : ''

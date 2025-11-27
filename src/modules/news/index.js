@@ -1,4 +1,4 @@
-import { NewsModel  } from "#models/index.js"
+import { NewsModel, FeaturedNewsModel } from "#models/index.js"
 import {convertToTimestamp} from '#plugins/index.js'
 
 export default class NewsModule {
@@ -43,13 +43,10 @@ export default class NewsModule {
       
       if(time) {
         const value = convertToTimestamp(time)
-
-         console.log('value', value);
         options.createdAt = {
           $gte: value
         }
-      }      
-
+      }            
       const news = await NewsModel.find(options)
       .skip((page - 1) * perPage)
       .limit(perPage)
@@ -69,6 +66,52 @@ export default class NewsModule {
       res.status(500).json({ error: err.message });
     }
   }
+
+  other = async (req, res) => {
+    try{
+      let { exclude, location, limit, newsLastId } = req.body;
+      let exc = [];
+
+      if (exclude) {
+        exc = exclude.filter((item) => item);
+      }      
+
+      let typeFeaturedNews = 'tin-tuc-su-kien';
+      if (location) {
+        typeFeaturedNews = location;
+      }
+
+      const featuredNews = await FeaturedNewsModel
+        .find({ type: typeFeaturedNews }) // dùng typeFeaturedNews thay vì location
+        .limit(4)
+        .lean();
+
+      if (featuredNews && featuredNews.length) {
+        exc.push(...featuredNews.map((item) => item.newsId));
+      }
+
+      const options = {}
+      if(location){
+        options.location = location
+      }
+      if(exc.length){
+        options._id = { $nin: exc }   
+      }
+
+      if (newsLastId) {
+        options._id.$lt = newsLastId;
+      }
+
+      const newsList = await NewsModel.find(options)
+      .limit(limit || 10)
+      .lean(); 
+
+      return res.formatter.ok(newsList)
+    }catch(e) {
+      return res.formatter.ok([])
+    }
+  };
+
 
 
 }
