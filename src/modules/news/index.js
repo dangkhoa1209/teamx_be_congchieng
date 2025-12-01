@@ -61,9 +61,7 @@ export default class NewsModule {
         total: totalItems
       })
     } catch (err) {
-      console.log(err);
-      
-      res.status(500).json({ error: err.message });
+      return res.formatter.ok([])
     }
   }
 
@@ -90,19 +88,22 @@ export default class NewsModule {
         exc.push(...featuredNews.map((item) => item.newsId));
       }
 
-      const options = {}
+      const options = {
+        status: 'active'
+      }
       if(location){
         options.location = location
       }
       if(exc.length){
         options._id = { $nin: exc }   
-      }
+      }      
 
       if (newsLastId) {
         options._id.$lt = newsLastId;
       }
 
       const newsList = await NewsModel.find(options)
+       .sort({ createdAt: -1 }) 
       .limit(limit || 10)
       .lean(); 
 
@@ -112,6 +113,39 @@ export default class NewsModule {
     }
   };
 
+  list = async (req, res) => {
+  try {
+    let { filter, lastId = null, perPage = 18 } = req.body;
+
+    perPage = parseInt(perPage);
+    if (perPage < 1) perPage = 10;
+
+    const { location } = filter || {};
+
+    if (location) {
+      options.location = location;
+    }
+
+    if (lastId) {
+      options._id = { $lt: lastId }; 
+    }
+
+    const news = await NewsModel.find(options)
+      .limit(perPage)
+      .sort({ _id: -1 });
+
+    const newLastId = news.length ? news[news.length - 1]._id : null;
+
+    return res.formatter.ok({
+      data: news,
+      perPage,
+      lastId: newLastId
+    });
+
+  } catch (err) {
+    return res.formatter.ok([]);
+  }
+};
 
 
 }

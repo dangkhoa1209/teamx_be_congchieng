@@ -5,7 +5,7 @@ export default (app) => {
   router.post('/', new NewsModule().detail)
   router.post('/other', new NewsModule().other)
   router.post('/find', new NewsModule().find)
-
+  router.post('/list', new NewsModule().list)
   return router
 }
 

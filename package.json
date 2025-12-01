@@ -14,7 +14,8 @@
   "scripts": {
     "init": "node src/init.js",
     "dev": "nodemon src/app.js",
-    "start": "node src/app.js"
+    "start": "node src/app.js",
+    "news": "node src/init-news.js"
   },
   "keywords": [],
   "author": "",

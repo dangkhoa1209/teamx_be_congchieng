@@ -2,9 +2,7 @@ import { FeaturedNewsModel , NewsModel } from "#models/index.js"
 
 export default class AdminFeaturedNewsModule {
   update = async (req, res) => {
-    try {
-      console.log('req', req.body);
-      
+    try {      
       const { position, newsId, type } = req.body
 
       if (!position || position < 1 || position > 4) {
@@ -17,11 +15,11 @@ export default class AdminFeaturedNewsModule {
 
       const news = await NewsModel
         .findOne({ _id: newsId, status: 'active' })
-        .select('title subtitle slugify thumbnail location createdAt')
+        .select('title subtitle thumbnail location createdAt')
         .lean()
 
       if (!news) {
-        return res.formatter.notFound('Bài viết không tồn tại hoặc chưa được duyệt')
+        return res.formatter.unprocess('Bài viết không tồn tại hoặc chưa được duyệt')
       }
 
     const result = await FeaturedNewsModel.findOneAndUpdate(
@@ -37,6 +35,7 @@ export default class AdminFeaturedNewsModule {
           setDefaultsOnInsert: true
         }
       )
+      
       
       return res.formatter.ok(result)
 
