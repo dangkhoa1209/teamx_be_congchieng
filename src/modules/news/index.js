@@ -70,6 +70,8 @@ export default class NewsModule {
       let { exclude, location, limit, newsLastId } = req.body;
       let exc = [];
 
+      
+
       if (exclude) {
         exc = exclude.filter((item) => item);
       }      
@@ -101,7 +103,7 @@ export default class NewsModule {
       if (newsLastId) {
         options._id.$lt = newsLastId;
       }
-
+      
       const newsList = await NewsModel.find(options)
        .sort({ createdAt: -1 }) 
       .limit(limit || 10)
@@ -109,6 +111,8 @@ export default class NewsModule {
 
       return res.formatter.ok(newsList)
     }catch(e) {
+      console.log('e', e);
+      
       return res.formatter.ok([])
     }
   };

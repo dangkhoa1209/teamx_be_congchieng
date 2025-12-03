@@ -5,17 +5,21 @@ import AdminNewsModule from './admin/news/index.js'
 import AdminFeaturedNewsModule from "./admin/featured-news/index.js";
 import AdminAuthModule from './admin/auth/index.js'
 import AdminAcountModule from './admin/account/index.js'
+import AdminPageImageModule from './admin/image-page/index.js'
 
 import NewsModule from './news/index.js'
 import FeaturedNewsModule from './featured-news/index.js'
+import PageImageModule from './image-page/index.js'
 export {
   NewsModule,
   UserModule,
   FileModule,
   FeaturedNewsModule,
+  PageImageModule,
   
   AdminNewsModule,
   AdminAuthModule,
   AdminAcountModule,
-  AdminFeaturedNewsModule
+  AdminFeaturedNewsModule,
+  AdminPageImageModule
 }

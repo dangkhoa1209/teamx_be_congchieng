@@ -28,7 +28,7 @@ export default class FeaturedNewsModule {
         .limit(4)
         .lean()
 
-
+        
       return res.formatter.ok(items)
     } catch (error) {      
       return res.formatter.ok([])

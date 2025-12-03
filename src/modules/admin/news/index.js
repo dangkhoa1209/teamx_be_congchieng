@@ -55,10 +55,7 @@ export default class AdminNewsModule {
       contents,
       status: req.body.status,
       author: req.body.author
-    }
-
-    console.log('data', data);
-    
+    }    
 
     const newNews = new NewsModel(data)
     await newNews.save()
@@ -148,15 +145,11 @@ export default class AdminNewsModule {
     if (page < 1) page = 1
     if (per_page < 1) per_page = 10
     const totalItems = await NewsModel.countDocuments()
-    
-    console.log('query', query);
-    
+        
     const data = await NewsModel.find({})
       .skip((page - 1) * per_page)
       .limit(per_page)
       .sort({ createdAt: -1 })
-
-      console.log('data', data);
       
     return res.formatter.ok({
       data,
