@@ -3,10 +3,24 @@ import { FeaturedNewsModel , NewsModel } from "#models/index.js"
 export default class FeaturedNewsModule {
   get = async (req, res) => {
     try {
-      const { type  } = req.body      
-            
+      const { type , exclude } = req.body      
+          
+       let exc = [];
+       if (exclude) {
+        exc = exclude.filter((item) => item);
+      }   
+      
+      const options = {
+        type: type
+      }
+
+      if(exc.length){
+        options.newsId = { $nin: exc }   
+      }    
+
+
       const items = await FeaturedNewsModel
-        .find({ type })
+        .find(options)
         .populate({
           path: 'news',
         })
