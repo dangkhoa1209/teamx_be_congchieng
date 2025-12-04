@@ -10,12 +10,14 @@ import AdminPageImageModule from './admin/image-page/index.js'
 import NewsModule from './news/index.js'
 import FeaturedNewsModule from './featured-news/index.js'
 import PageImageModule from './image-page/index.js'
+import ContactModule from './contact/index.js'
 export {
   NewsModule,
   UserModule,
   FileModule,
   FeaturedNewsModule,
   PageImageModule,
+  ContactModule,
   
   AdminNewsModule,
   AdminAuthModule,

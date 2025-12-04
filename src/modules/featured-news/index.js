@@ -3,6 +3,8 @@ import { FeaturedNewsModel , NewsModel } from "#models/index.js"
 export default class FeaturedNewsModule {
   get = async (req, res) => {
     try {
+      console.log('sdfs');
+      
       const { type , exclude } = req.body      
           
        let exc = [];
@@ -18,6 +20,9 @@ export default class FeaturedNewsModule {
         options.newsId = { $nin: exc }   
       }    
 
+     
+      
+
 
       const items = await FeaturedNewsModel
         .find(options)
@@ -28,9 +33,13 @@ export default class FeaturedNewsModule {
         .limit(4)
         .lean()
 
+         console.log('items', items);
+
         
       return res.formatter.ok(items)
-    } catch (error) {      
+    } catch (error) {     
+      console.log('err', error);
+       
       return res.formatter.ok([])
     }
   }
