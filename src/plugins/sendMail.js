@@ -1,4 +1,4 @@
-import transporter  from '../../config/mailer.js';
+import transporter  from '../config/mailer.js';
 
 async function sendMail({ to, subject, text, html }) {
   try {

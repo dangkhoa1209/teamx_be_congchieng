@@ -13,13 +13,14 @@ async function init() {
     // create client
     const existingClient = await OAuthClient.findOne({});
     if (existingClient) {
-      console.log('exist client', existingClient);
+      console.log('Exist client:', existingClient);
     } else {
       const newClient = new OAuthClient({
         secret: 'demo-secret',
         grants: ['password', 'refresh_token']
       });
       await newClient.save();
+      console.log('New client:', newClient);
     }
 
     // create user 
