@@ -118,38 +118,42 @@ export default class NewsModule {
   };
 
   list = async (req, res) => {
-  try {
-    let { filter, lastId = null, perPage = 18 } = req.body;
+    try {
+      let { filter, lastId = null, perPage = 18 } = req.body;
 
-    perPage = parseInt(perPage);
-    if (perPage < 1) perPage = 10;
+      perPage = parseInt(perPage);
+      if (perPage < 1) perPage = 10;
 
-    const { location } = filter || {};
+      const { location } = filter || {};
 
-    if (location) {
-      options.location = location;
+      const options = {
+        status: 'active'
+      }
+      
+      if (location) {
+        options.location = location;
+      }
+
+      if (lastId) {
+        options._id = { $lt: lastId }; 
+      }
+
+      const news = await NewsModel.find(options)
+        .limit(perPage)
+        .sort({ _id: -1 });
+
+      const newLastId = news.length ? news[news.length - 1]._id : null;
+
+      return res.formatter.ok({
+        data: news,
+        perPage,
+        lastId: newLastId
+      });
+
+    } catch (err) {
+      return res.formatter.ok([]);
     }
-
-    if (lastId) {
-      options._id = { $lt: lastId }; 
-    }
-
-    const news = await NewsModel.find(options)
-      .limit(perPage)
-      .sort({ _id: -1 });
-
-    const newLastId = news.length ? news[news.length - 1]._id : null;
-
-    return res.formatter.ok({
-      data: news,
-      perPage,
-      lastId: newLastId
-    });
-
-  } catch (err) {
-    return res.formatter.ok([]);
-  }
-};
+  };
 
 
 }

@@ -145,8 +145,14 @@ export default class AdminNewsModule {
     if (page < 1) page = 1
     if (per_page < 1) per_page = 10
     const totalItems = await NewsModel.countDocuments()
+    const { location } = query || {};
+    const options = {}
+
+     if (location) {
+        options.location = location;
+      }
         
-    const data = await NewsModel.find({})
+    const data = await NewsModel.find(options)
       .skip((page - 1) * per_page)
       .limit(per_page)
       .sort({ createdAt: -1 })
