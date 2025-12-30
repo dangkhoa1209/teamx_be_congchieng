@@ -31,12 +31,12 @@ async function init() {
       await existAdmin.save()
       console.log('update admin success');
     }else{
-      const newAdmin = new OAuthClient({
+      const newAdmin = new UserModel({
         username: 'admin',
         password: process.env.ADMIN_DEFAULT_PW || '123456',
         isAdmin: true
       });
-      await newAdmin.new()
+      await newAdmin.save()
       console.log('create admin success'); 
     }
 
