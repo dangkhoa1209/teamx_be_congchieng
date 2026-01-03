@@ -4,7 +4,7 @@ export default class AdminAcountModule {
 
   save = async (req, res) => {    
     const {_id, username, password, permissions} = req.body
-
+    
     const existAdmin = await UserModel.findOne({username});
     if(existAdmin){
       if(!_id || _id != existAdmin._id.toString()){
@@ -82,10 +82,6 @@ export default class AdminAcountModule {
 
     if(!user) {
       return res.formatter.unprocess('Không tìm thấy tài khoản')
-    }
-
-    if(user.username === 'admin') {
-      return res.formatter.unprocess('Không đuợc phép cập nhật Admin')
     }
 
     user.password = password
